@@ -96,7 +96,7 @@ class TweetCell: UITableViewCell {
         }, completion: nil)
         
         
-        self.setNeedsDisplay()
+//        self.setNeedsDisplay()
     }
     
     func favoriteTapped() {

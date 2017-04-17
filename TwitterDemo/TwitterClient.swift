@@ -14,7 +14,7 @@ class TwitterClient: BDBOAuth1SessionManager {
     var loginSuccess: (() -> ())?
     var loginFailure: ((Error) -> ())?
     
-    static let sharedInstance = TwitterClient(baseURL: NSURL(string: "https://api.twitter.com")! as URL!, consumerKey:"" , consumerSecret:"" )
+    static let sharedInstance = TwitterClient(baseURL: NSURL(string: "https://api.twitter.com")! as URL!, consumerKey:"0YmhMkUxtoHPpHXmodnktWbAv" , consumerSecret:"quGtQcbaDSrIO6ysKoEN4jM4q3rrqHywZlZpRXDRRmJEo1vrQd" )
     
     func currentAccount(success: @escaping (User) -> (), failure: @escaping (Error) -> ()){
         get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task: URLSessionDataTask, response: Any?) -> Void in
