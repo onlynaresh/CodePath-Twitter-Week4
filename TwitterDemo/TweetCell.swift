@@ -73,6 +73,7 @@ class TweetCell: UITableViewCell {
         
         if let likes = tweetData?.favoritesCount {
             favLabelCount.text = String(likes)
+            print("fav count is:"+String(likes))
                    }
 
         var newImage : UIImage!

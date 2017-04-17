@@ -251,7 +251,7 @@
             </objects>
             <point key="canvasLocation" x="3492" y="-281.10944527736132"/>
         </scene>
-        <!--Tweet View Controller-->
+        <!--Home-->
         <scene sceneID="8bo-ju-wJs">
             <objects>
                 <viewController automaticallyAdjustsScrollViewInsets="NO" id="b0a-SU-kI7" customClass="TweetViewController" customModule="TwitterDemo" customModuleProvider="target" sceneMemberID="viewController">
@@ -432,13 +432,15 @@
                         </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" id="nCY-Wy-gcE">
+                    <navigationItem key="navigationItem" title="Home" id="nCY-Wy-gcE">
                         <barButtonItem key="leftBarButtonItem" title="Sign Out" id="aaH-xB-BCs">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <action selector="onLogout:" destination="b0a-SU-kI7" id="x49-Ty-fDn"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="New" id="WrN-P7-Dmz">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <segue destination="G3S-0q-WVm" kind="show" id="lAT-0t-Slo"/>
                             </connections>
@@ -458,9 +460,10 @@
             <objects>
                 <navigationController storyboardIdentifier="TweetsNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="Wpr-KI-Adb" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="UVW-Uc-6wx">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="UVW-Uc-6wx">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.25747897487438975" green="0.62061965989319579" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -536,11 +539,13 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="Fx9-vV-S4Z">
                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="Uqx-id-LjO">
+                            <color key="tintColor" red="0.1961075903" green="0.61811587459999995" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="onCancel:" destination="ivq-Vw-8il" id="BNo-ze-fIo"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Tweet" id="hNb-ek-cXQ">
+                            <color key="tintColor" red="0.1961075903" green="0.61811587459999995" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="postATweet:" destination="ivq-Vw-8il" id="3Ba-ov-3Id"/>
                             </connections>
@@ -563,9 +568,10 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="G3S-0q-WVm" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="scf-Uw-Zzx">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="scf-Uw-Zzx">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>

@@ -22,6 +22,7 @@ class TweetViewController: UIViewController{
         self.tableView.dataSource = self
         self.tableView.delegate = self
        
+        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor.white]
         
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 100
