@@ -48,9 +48,7 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let panGR = UIPanGestureRecognizer(target: self, action: #selector(headeriewPanGesture(_:)));
-        headerView.addGestureRecognizer(panGR)
+      
     
         
         self.tableView.dataSource = self
@@ -96,29 +94,6 @@ class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
         super.viewWillAppear(animated)
     }
 
-    func headeriewPanGesture(_ sender: UIPanGestureRecognizer) {
-        
-        let velocity = sender.velocity(in: self.view)
-        let point = sender.translation(in: self.view)
-        print(point)
-        print(velocity)
-        
-        if sender.state == .began {
-            if velocity.y > 0 {
-                self.topLevelViewToTopConstraint.constant = -(self.headerView.frame.height - 44)
-            } else {
-                self.topLevelViewToTopConstraint.constant = 0
-            }
-        } else if sender.state == .changed {
-            if point.y > 0 {
-                self.topLevelViewToTopConstraint.constant = 0
-            } else {
-                self.topLevelViewToTopConstraint.constant = point.y
-            }
-        } else {
-            moveHeader(collapse: velocity.y <= 0)
-        }
-    }
     
     
       func loadTable() {
