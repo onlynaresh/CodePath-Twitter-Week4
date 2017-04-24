@@ -13,8 +13,10 @@ class TwitterClient: BDBOAuth1SessionManager {
     
     var loginSuccess: (() -> ())?
     var loginFailure: ((Error) -> ())?
+    var apiToLastSeenIDMap = [String : Int]()
+
     
-    static let sharedInstance = TwitterClient(baseURL: NSURL(string: "https://api.twitter.com")! as URL!, consumerKey:"" , consumerSecret:"" )
+    static let sharedInstance = TwitterClient(baseURL: NSURL(string: "https://api.twitter.com")! as URL!, consumerKey:"0YmhMkUxtoHPpHXmodnktWbAv" , consumerSecret:"quGtQcbaDSrIO6ysKoEN4jM4q3rrqHywZlZpRXDRRmJEo1vrQd" )
     
     func currentAccount(success: @escaping (User) -> (), failure: @escaping (Error) -> ()){
         get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task: URLSessionDataTask, response: Any?) -> Void in
@@ -145,4 +147,66 @@ class TwitterClient: BDBOAuth1SessionManager {
             self.loginFailure?(error!)
         }
     }
+    
+    
+    func userTimeline(_ screenname: String, success: @escaping ([Tweet]) -> (), failure: @escaping (Error) -> ()){
+        //let parameters = ["screenname": screenname]
+        get("1.1/statuses/user_timeline/\(screenname).json", parameters: nil, progress: nil, success: { (task: URLSessionDataTask, response: Any?) -> Void in
+            let dictionaries = response as! [NSDictionary]
+            let tweets = Tweet.tweetWithArray(dictionaries: dictionaries)
+            success(tweets)
+        }, failure: { (task: URLSessionDataTask?, error: Error) -> Void in
+            failure(error)
+        })
+    }
+    
+    
+    func fetchTweetss(user : User, params : [String : Any], success: @escaping (([Tweet]) -> Void),
+                     error:@escaping ((Error) -> Void)) {
+        
+        
+        
+        
+        TwitterClient.sharedInstance?.get("1.1/statuses/user_timeline.json",
+                        parameters: params,
+                        progress: nil,
+                        success: { (task, response) in
+                            if let dictionaries = response as? [NSDictionary] {
+                                let tweets = Tweet.tweetWithArray(dictionaries: dictionaries);
+                                self.saveLastSeenLowestTweetID(tweets: tweets, api: "1.1/statuses/user_timeline.json")
+                                success(tweets)
+                                print("The values from fetch clients is:\(tweets)")
+                            } else {
+                                error(NSError(domain: "unable to fetch tweets", code: 0, userInfo: nil))
+                            }
+        }) { (task, receivedError) in
+            error(receivedError)
+        }
+        
+      
+    }
+    
+    
+    internal func saveLastSeenLowestTweetID(tweets : [Tweet], api : String ) {
+        
+        var lastSeenLowestTweetID = Int.max
+        
+        tweets.forEach { (tweet) in
+            if let tweetID = tweet.tweetID {
+                lastSeenLowestTweetID = min(tweetID, lastSeenLowestTweetID)
+            }
+        }
+        apiToLastSeenIDMap[api] = lastSeenLowestTweetID
+    }
+    
+    
+    func fetchTweets(user : User, success: @escaping (([Tweet]) -> Void),
+                     error:@escaping ((Error) -> Void)) {
+        
+        let params = ["count" : 20,
+                      "user_id" : user.userID!]
+        
+        fetchTweetss(user : user, params: params, success: success, error: error)
+    }
+
 }

@@ -8,28 +8,176 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: UIViewController, UIGestureRecognizerDelegate {
+  
+    var tweets: [Tweet]!
+    var profile: User?
+
+    
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var maskView: UIView!
+    
+    // top level view constraints
+    @IBOutlet weak var topLevelViewToTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var topLevelViewTrailingSpaceConstraint: NSLayoutConstraint!
+    @IBOutlet weak var topLevelViewLeadingSpaceConstraint: NSLayoutConstraint!
+    
+    
+    
+    @IBOutlet weak var topLevelView: UIView!
+    
+    @IBOutlet weak var backdropImageView: UIImageView!
+    @IBOutlet weak var whiteViewAroundProfileImageView: UIView!
+    @IBOutlet weak var profileImageView: UIImageView!
+    
+    @IBOutlet weak var numberTweetsLabel: UILabel!
+    
+    @IBOutlet weak var userName: UILabel!
+    @IBOutlet weak var screenName: UILabel!
+    @IBOutlet weak var numberFollowingLabel: UILabel!
+    
+    @IBOutlet weak var numberFollowersLabel: UILabel!
+    
+    
+    @IBOutlet weak var headerViewBottomHalf: UIView!
+    @IBOutlet weak var headerView: UIView!
+    
+    
+    var user : User?
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let panGR = UIPanGestureRecognizer(target: self, action: #selector(headeriewPanGesture(_:)));
+        headerView.addGestureRecognizer(panGR)
+    
+        
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
+        
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 100
+        
+        // set profile image and backdrop image
+        profileImageView.layer.cornerRadius = 5
+        profileImageView.clipsToBounds = true
+        whiteViewAroundProfileImageView.layer.cornerRadius = 5
+        whiteViewAroundProfileImageView.clipsToBounds = true
+        
+        updateProfileHeader()
+        
+        loadTable()
+      
+    }
+    
+    func updateProfileHeader() {
+        var localUser: User!
+        
+        if user != nil {
+            localUser=user
+        }else {
+            localUser = User.currentUser
+        }
+        
+        self.profileImageView.setImageWith(localUser.profileUrl as! URL)
+        
+        userName.text = localUser.name as String?
+        screenName.text = "@\(localUser.screenname!)"
+            
+        numberFollowersLabel.text = "\(localUser.followersCount ?? 0)"
+        numberFollowingLabel.text = "\(localUser.friendsCount ?? 0)"
+        numberTweetsLabel.text = "\(localUser.tweetsCount ?? 0)"
 
-        // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+       
+        super.viewWillAppear(animated)
     }
 
+    func headeriewPanGesture(_ sender: UIPanGestureRecognizer) {
+        
+        let velocity = sender.velocity(in: self.view)
+        let point = sender.translation(in: self.view)
+        print(point)
+        print(velocity)
+        
+        if sender.state == .began {
+            if velocity.y > 0 {
+                self.topLevelViewToTopConstraint.constant = -(self.headerView.frame.height - 44)
+            } else {
+                self.topLevelViewToTopConstraint.constant = 0
+            }
+        } else if sender.state == .changed {
+            if point.y > 0 {
+                self.topLevelViewToTopConstraint.constant = 0
+            } else {
+                self.topLevelViewToTopConstraint.constant = point.y
+            }
+        } else {
+            moveHeader(collapse: velocity.y <= 0)
+        }
+    }
+    
+    
+      func loadTable() {
+        var localUser: User?
+        
+        if user != nil {
+            localUser=user
+        }else {
+            localUser = User.currentUser
+        }
+        
+            TwitterClient.sharedInstance?.fetchTweets(user : localUser!, success: { (tweets) in
+               
+                self.tweets = tweets
+              //  self.refreshControl.endRefreshing()
+                self.tableView.reloadData()
+            }, error: { (receivedError) in
+                print(receivedError)
+            })
+        }
+    
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    
+    @IBAction func backButtonPressed(_ sender: UIButton) {
+        print("back button tapped")
+        dismiss(animated: false, completion: nil)
     }
-    */
-
+    
 }
+
+extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
+  
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return tweets?.count ?? 0
+    }
+    
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TweetCell", for: indexPath) as! TweetCell
+        cell.tweetData = tweets?[indexPath.row] ?? nil
+        cell.profileImage.tag = indexPath.row
+//        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(onTap))
+//        cell.profileImage.addGestureRecognizer(gestureRecognizer)
+//        cell.profileImage.isUserInteractionEnabled = true
+//        cell.profileImage.tag = indexPath.row
+        
+        return cell
+    }
+    
+    
+    
+   }
+
+

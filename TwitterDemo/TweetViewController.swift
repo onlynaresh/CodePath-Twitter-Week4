@@ -14,7 +14,8 @@ class TweetViewController: UIViewController{
     @IBOutlet weak var tableView: UITableView!
     
     var tweets: [Tweet]!
-    
+    var profile: User?
+    var refreshControl : UIRefreshControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,10 +37,10 @@ class TweetViewController: UIViewController{
             }
             
             
-            let refreshControl = UIRefreshControl()
-            refreshControl.addTarget(self, action: #selector(TweetViewController.refreshControlAction(_:)), for: UIControlEvents.valueChanged)
+            self.refreshControl = UIRefreshControl()
+            self.refreshControl.addTarget(self, action: #selector(TweetViewController.refreshControlAction(_:)), for: UIControlEvents.valueChanged)
             
-            self.tableView.insertSubview(refreshControl, at: 0)
+            self.tableView.insertSubview(self.refreshControl, at: 0)
             self.tableView.reloadData()
             
         }, failure: { (error: Error) in
@@ -110,6 +111,22 @@ class TweetViewController: UIViewController{
         detailViewController?.tweet = tweet
         }
         
+        else if segue.identifier == "ShowUserProfileSegue",
+            
+            let userProfileVC = segue.destination as? ProfileViewController {
+            
+            userProfileVC.user = profile
+        }
+
+        
+//        else{
+//            //let cell = sender as? TweetCell,
+//            let navController = segue.destination as? UINavigationController 
+//            let userProfileVC = navController?.topViewController as? ProfileViewController
+//            userProfileVC?.user = profile
+//        }
+
+        
     }
     
     @IBAction func onLogout(_ sender: Any) {
@@ -134,14 +151,46 @@ class TweetViewController: UIViewController{
 }
 
 extension TweetViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TweetCell", for: indexPath) as! TweetCell
-        cell.tweetData = tweets?[indexPath.row] ?? nil
-        return cell
-    }
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "TweetCell", for: indexPath) as! TweetCell
+//        cell.tweetData = tweets?[indexPath.row] ?? nil
+//        return cell
+//    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tweets?.count ?? 0
+    }
+    
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TweetCell", for: indexPath) as! TweetCell
+        cell.tweetData = tweets?[indexPath.row] ?? nil
+        cell.profileImage.tag = indexPath.row
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(onTap))
+        cell.profileImage.addGestureRecognizer(gestureRecognizer)
+        cell.profileImage.isUserInteractionEnabled = true
+        cell.profileImage.tag = indexPath.row
+        
+        return cell
+    }
+    
+
+    
+    func onTap(_ sender: UITapGestureRecognizer) {
+        if let tappedRow = sender.view?.tag {
+            let tweet = tweets[tappedRow]
+         
+                if let tappedUser = tweet.user {
+                    profile = tappedUser
+                }
+            
+        }
+        performSegue(withIdentifier: "ShowUserProfileSegue", sender: self)
+//        self.navigationController?.pushViewController(ProfileViewController, animated: true)
+
+        
+      
+        
     }
 }
 
